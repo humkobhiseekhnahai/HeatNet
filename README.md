@@ -1,5 +1,5 @@
 
-HeatNet – Digital Twin Backend
+## HeatNet – Digital Twin Backend
 
   
 
@@ -11,7 +11,7 @@ AI-driven digital twin backend for data center thermal simulation, stress modeli
 
   
 
-Overview
+## Overview
 
   
 
@@ -37,7 +37,7 @@ The system is designed to later plug in cooling chamber simulations and AI-based
 
   
 
-Tech Stack
+## Tech Stack
 
 • Node.js + TypeScript
 
@@ -57,68 +57,7 @@ Tech Stack
 
   
 
-Repository Structure
-
-  
-
-HeatNet/
-
-├── docker-compose.yml
-
-├── README.md
-
-└── digital-twin-backend/
-
-├── Dockerfile
-
-├── .env
-
-├── package.json
-
-├── tsconfig.json
-
-├── prisma/
-
-│ └── schema.prisma
-
-├── src/
-
-│ ├── index.ts
-
-│ ├── server.ts
-
-│ ├── api/
-
-│ │ └── twinRoutes.ts
-
-│ ├── ws/
-
-│ │ └── twinSocket.ts
-
-│ ├── twin/
-
-│ │ ├── twinState.ts
-
-│ │ ├── simulator.ts
-
-│ │ ├── aggregate.ts
-
-│ │ └── persistSnapshot.ts
-
-│ └── types/
-
-│ └── twin.ts
-
-└── dist/
-
-  
-  
-
-⸻
-
-  
-
-Environment Variables
+## Environment Variables
 
   
 
@@ -126,7 +65,7 @@ Create digital-twin-backend/.env
 
   
 
-DATABASE_URL=postgresql://postgres:mysecretpassword@postgres:5432/postgres
+>DATABASE_URL=postgresql://postgres:mysecretpassword@postgres:5432/postgres
 
   
 
@@ -138,7 +77,7 @@ When using Docker Compose, host must be postgres, not localhost.
 
   
 
-Option 1: Run Everything Using Docker (Recommended)
+## Option 1: Run Everything Using Docker (Recommended)
 
   
 
@@ -150,7 +89,11 @@ Prerequisites
 
   
 
-Start the full stack
+**
+
+**Start the full stack**
+
+**
 
   
 
@@ -158,11 +101,11 @@ From the root folder (HeatNet):
 
   
 
-docker compose up --build
+>docker compose up --build
 
   
 
-Services
+**Services**
 
 • Backend → http://localhost:3000
 
@@ -172,11 +115,11 @@ Services
 
   
 
-Stop & clean
+**Stop & clean**
 
   
 
-docker compose down -v
+> docker compose down -v
 
   
   
@@ -185,7 +128,7 @@ docker compose down -v
 
   
 
-Option 2: Run Database Locally + Backend Manually
+## Option 2: Run Database Locally + Backend Manually
 
   
 
@@ -193,15 +136,7 @@ Start PostgreSQL locally
 
   
 
-docker run -d \
-
---name heatnet-postgres \
-
--e POSTGRES_PASSWORD=mysecretpassword \
-
--p 5432:5432 \
-
-postgres:15
+>docker run -d --name heatnet-postgres -e POSTGRES_PASSWORD=mysecretpassword -p 5432:5432 postgres:15
 
   
 
@@ -209,7 +144,7 @@ Update .env:
 
   
 
-DATABASE_URL=postgresql://postgres:mysecretpassword@localhost:5432/postgres
+>DATABASE_URL=postgresql://postgres:mysecretpassword@localhost:5432/postgres
 
   
   
@@ -218,13 +153,13 @@ DATABASE_URL=postgresql://postgres:mysecretpassword@localhost:5432/postgres
 
   
 
-Setup backend
+## Setup backend
 
   
 
-cd digital-twin-backend
+>cd digital-twin-backend
 
-npm install
+>npm install
 
   
 
@@ -232,7 +167,7 @@ Generate Prisma client:
 
   
 
-npx prisma generate
+>npx prisma generate
 
   
 
@@ -240,11 +175,7 @@ Run migrations (IMPORTANT):
 
   
 
-npx prisma migrate dev --name init
-
-  
-
-Build & start:
+>npx prisma migrate dev --name init
 
   
 
@@ -253,31 +184,7 @@ npm run start
   
   
 
-⸻
 
-  
-
-Prisma Notes
-
-  
-
-If you see errors like:
-
-  
-
-relation "TwinSnapshot" does not exist
-
-  
-
-Migrations were not applied.
-
-  
-
-For Docker:
-
-  
-
-docker compose exec heatnet-backend npx prisma migrate deploy
 
   
   
@@ -286,7 +193,7 @@ docker compose exec heatnet-backend npx prisma migrate deploy
 
   
 
-Runtime Behavior
+## Runtime Behavior
 
 • Simulation tick: 1 second
 
@@ -306,7 +213,7 @@ Runtime Behavior
 
   
 
-Simulation Model (Current)
+## Simulation Model (Current)
 
 • 100–120 racks
 
@@ -332,7 +239,7 @@ Stress-biased model for AI testing.
 
   
 
-WebSocket Payload
+## WebSocket Payload
 
   
 
@@ -356,7 +263,7 @@ Live stream includes:
 
   
 
-Future Extensions
+## Future Extensions
 
 • Cooling chamber & chilled-water loop simulation
 
