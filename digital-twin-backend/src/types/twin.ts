@@ -10,6 +10,7 @@ export interface RackState {
   status: RackStatus;
   explanation?: string;
   coolingEfficiency?: number; // 0.6 – 1.0
+  previousInletTemp?: number; // For temperature smoothing
 }
 
 export interface Zone {

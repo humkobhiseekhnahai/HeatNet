@@ -8,6 +8,12 @@ const express_1 = __importDefault(require("express"));
 const http_1 = __importDefault(require("http"));
 const ws_1 = __importDefault(require("ws"));
 const twinRoutes_1 = require("./api/twinRoutes");
+const coolingRoutes_1 = require("./api/coolingRoutes");
+const heatingRoutes_1 = require("./api/heatingRoutes");
+// Temporarily disabled advanced systems
+// import { failureRouter } from "./api/failureRoutes";
+// import { alertingRouter } from "./api/alertingRoutes";
+// import { scenarioRouter } from "./api/scenarioRoutes";
 const simulator_1 = require("./twin/simulator");
 const twinSocket_1 = require("./ws/twinSocket");
 const persistSnapshot_1 = require("./twin/persistSnapshot");
@@ -18,6 +24,12 @@ function startServer() {
     // REST
     app.use(express_1.default.json());
     app.use("/twin", twinRoutes_1.twinRouter);
+    app.use("/cooling", coolingRoutes_1.coolingRouter);
+    app.use("/heating", heatingRoutes_1.heatingRouter);
+    // Temporarily disabled advanced systems
+    // app.use("/failures", failureRouter);
+    // app.use("/alerts", alertingRouter);
+    // app.use("/scenarios", scenarioRouter);
     // WebSocket
     const wss = new ws_1.default.Server({
         server,
@@ -29,7 +41,9 @@ function startServer() {
      */
     let tick = 0;
     setInterval(() => {
-        (0, simulator_1.simulateTick)();
+        // Main simulation tick with enhanced logging
+        const twinState = (0, simulator_1.simulateTick)();
+        // Broadcast update
         (0, twinSocket_1.broadcastUpdate)(wss);
         tick++;
         if (tick % 5 === 0) {

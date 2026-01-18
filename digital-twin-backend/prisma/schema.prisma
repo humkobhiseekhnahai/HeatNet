@@ -20,3 +20,104 @@ model TwinSnapshot {
   maxInletTemp Float
   totalPowerKW Float
 }
+
+// Failure Simulation Tables
+model FailureEvent {
+  id            String   @id @default(uuid())
+  timestamp     DateTime @default(now())
+  failureType   String   // CRAC, PUMP, FAN, POWER, ENVIRONMENTAL
+  severity      String   // MINOR, MAJOR, CRITICAL
+  equipmentId   String
+  equipmentType String   // CRAC_UNIT, PUMP, FAN_ARRAY, PDU, SENSOR
+  parameters    Json?    // Failure-specific parameters
+  isActive      Boolean  @default(true)
+  resolvedAt    DateTime?
+  cascadeChain  String[] // IDs of related failures
+  description   String
+  expectedDurationMs Int?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model EquipmentState {
+  id              String   @id @default(uuid())
+  equipmentId     String   @unique
+  equipmentType   String   // CRAC_UNIT, PUMP, FAN_ARRAY, PDU, SENSOR
+  health          Float    @default(1.0) // 0-1 health score
+  mtbf            Float?   // Mean time between failures in hours
+  lastMaintenance DateTime?
+  operationalStatus String @default("NORMAL") // NORMAL, DEGRADED, FAILED, MAINTENANCE
+  location        String?  // Zone or rack location
+  specifications  Json?    // Equipment specifications
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// Alerting System Tables
+model Alert {
+  id                  String   @id @default(uuid())
+  timestamp           DateTime @default(now())
+  alertType           String   // TEMPERATURE, PERFORMANCE, COST, SYSTEM_HEALTH
+  severity            String   // INFO, WARNING, CRITICAL
+  title               String
+  description         String
+  affectedRacks       String[] // Array of rack IDs
+  metrics             Json?    // Alert-specific metrics
+  rootCauseAnalysis   Json?    // RCA results
+  status              String   @default("ACTIVE") // ACTIVE, ACKNOWLEDGED, RESOLVED
+  acknowledgedBy      String?
+  acknowledgedAt      DateTime?
+  resolvedAt          DateTime?
+  correlationId       String?  // For related alerts
+  source              String?  // Source component or equipment
+  threshold           Json?    // Threshold that triggered alert
+  escalationLevel     Int      @default(0)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model AlertRule {
+  id            String   @id @default(uuid())
+  name          String
+  alertType     String   // TEMPERATURE, PERFORMANCE, COST, SYSTEM_HEALTH
+  conditions    Json     // Threshold conditions
+  severity      String   // INFO, WARNING, CRITICAL
+  isActive      Boolean  @default(true)
+  cooldownMs    Int      @default(300000) // 5 minutes
+  description   String?
+  enabled       Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// Scenario System Tables
+model Scenario {
+  id              String   @id @default(uuid())
+  name            String
+  description     String
+  category        String   // TESTING, STRESS, OPTIMIZATION, FAILURE, MAINTENANCE
+  isPreset        Boolean  @default(false)
+  parameters      Json     // Failure, heating, cooling configurations
+  expectedOutcomes Json?   // Expected temperature, power, cost ranges
+  durationMs      Int?
+  tags            String[] // Tags for categorization
+  difficulty      String   // EASY, MEDIUM, HARD
+  author          String?
+  isActive        Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model ScenarioExecution {
+  id                String   @id @default(uuid())
+  scenarioId        String
+  startTime         DateTime @default(now())
+  endTime           DateTime?
+  status            String   @default("RUNNING") // RUNNING, COMPLETED, FAILED, CANCELLED
+  actualOutcomes    Json?    // Actual metrics from execution
+  validationResults Json?    // Comparison of expected vs actual
+  notes             String?
+  triggeredBy       String?  // User or system that triggered execution
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}

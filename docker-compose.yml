@@ -11,6 +11,11 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   digital-twin-backend:
     build:
@@ -18,12 +23,36 @@ services:
       dockerfile: Dockerfile
     container_name: heatnet-backend
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     ports:
       - "3000:3000"
+      - "3001:3001" # Additional port for WebSocket testing
     environment:
       DATABASE_URL: postgresql://postgres:mysecretpassword@postgres:5432/postgres
+      NODE_ENV: production
+      LOG_LEVEL: info
+      WS_PORT: 3001
     restart: always
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/twin/state', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    volumes:
+      - ./logs:/app/logs # Mount logs directory for persistent logging
+
+  # Optional: Add a simple frontend for testing (if needed)
+  # frontend:
+  #   image: nginx:alpine
+  #   container_name: heatnet-frontend
+  #   ports:
+  #     - "80:80"
+  #   volumes:
+  #     - ./frontend:/usr/share/nginx/html:ro
+  #   depends_on:
+  #     - digital-twin-backend
 
 volumes:
   postgres_data:

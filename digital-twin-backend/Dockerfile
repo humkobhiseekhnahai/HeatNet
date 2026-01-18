@@ -22,4 +22,9 @@ RUN npx tsc -b
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "npx prisma db push && node dist/index.js"]
+# Health check for the enhanced system
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3000/twin/state', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
+
+# Enhanced startup with database initialization
+CMD ["sh", "-c", "npx prisma db push --accept-data-loss && node dist/index.js"]

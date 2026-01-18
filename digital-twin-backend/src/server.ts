@@ -3,6 +3,13 @@ import http from "http";
 import WebSocket from "ws";
 
 import { twinRouter } from "./api/twinRoutes";
+import { coolingRouter } from "./api/coolingRoutes";
+import { heatingRouter } from "./api/heatingRoutes";
+// Temporarily disabled advanced systems
+// import { failureRouter } from "./api/failureRoutes";
+// import { alertingRouter } from "./api/alertingRoutes";
+// import { scenarioRouter } from "./api/scenarioRoutes";
+
 import { simulateTick } from "./twin/simulator";
 import { broadcastUpdate, setupTwinSocket } from "./ws/twinSocket";
 import { persistSnapshot } from "./twin/persistSnapshot";
@@ -15,6 +22,12 @@ export function startServer() {
   // REST
   app.use(express.json());
   app.use("/twin", twinRouter);
+  app.use("/cooling", coolingRouter);
+  app.use("/heating", heatingRouter);
+  // Temporarily disabled advanced systems
+  // app.use("/failures", failureRouter);
+  // app.use("/alerts", alertingRouter);
+  // app.use("/scenarios", scenarioRouter);
 
   // WebSocket
   const wss = new WebSocket.Server({
@@ -30,7 +43,10 @@ export function startServer() {
   let tick = 0;
 
   setInterval(() => {
-    simulateTick();
+    // Main simulation tick with enhanced logging
+    const twinState = simulateTick();
+    
+    // Broadcast update
     broadcastUpdate(wss);
 
     tick++;

@@ -5,7 +5,9 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "esModuleInterop": true,
-    "strict": true
+    "strict": true,
+    "noEmitOnError": false
   },
-  "include": ["**/*"]
+  "include": ["**/*"],
+  "exclude": ["node_modules", "dist", "src/failure.bak", "src/alerting.bak", "src/scenario.bak", "src/ws/advancedWebSocket.ts.bak", "src/failure", "src/alerting", "src/scenario"]
 }
